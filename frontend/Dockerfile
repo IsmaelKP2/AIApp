@@ -5,9 +5,6 @@ WORKDIR /app
 
 RUN pip install -r requirements.txt
 COPY . /app
-
-EXPOSE 8501
-
-ENTRYPOINT ["streamlit","run"]
-
-CMD ["streamlit_app.py"]
+host
+EXPOSE 80
+CMD ["streamlit","run","streamlit_app.py","--server.port","80","browser.port","80","--browser.serverAddress","fastapi.ismaelpapa.com"]
