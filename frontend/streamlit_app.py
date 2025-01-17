@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 from io import StringIO,BytesIO
 
-url = "http://backend:8000/ask/"
+url = "http://aiapp-backend:8000/ask/"
 params = {
     "text": "How many cats ?"
 }
