@@ -17,8 +17,10 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - 8501:8501
+      - 80:80
     volumes:
       - ./frontend:/app
     restart: always
     container_name: aiapp-frontend
+    env_file:
+      - ./frontend/.env

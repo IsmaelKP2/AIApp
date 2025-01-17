@@ -7,4 +7,4 @@ RUN pip install -r requirements.txt
 COPY . /app
 
 EXPOSE 80
-CMD ["streamlit","run","streamlit_app.py","--server.port","80","browser.port","80","--browser.serverAddress","fastapi.ismaelpapa.com"]
+CMD ["streamlit","run","streamlit_app.py","--server.port","80","browser.port","80"]

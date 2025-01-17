@@ -1,8 +1,15 @@
 import streamlit as st
 import requests
 from io import StringIO,BytesIO
+from dotenv import load_dotenv
+import os
 
-url = "http://aiapp-backend:8000/ask/"
+# Load environment variables from the .env file (if present)
+load_dotenv()
+# Access environment variables as if they came from the actual environment
+API_HOSTNAME = os.getenv('API_HOSTNAME')
+
+url = f"http://{API_HOSTNAME}:8000/ask/"
 params = {
     "text": "How many cats ?"
 }
