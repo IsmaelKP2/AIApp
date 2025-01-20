@@ -1,5 +1,6 @@
 FROM python:3.10.5-slim
 
+RUN apt-get update && apt-get install -y curl
 COPY requirements.txt app/requirements.txt
 WORKDIR /app
 
