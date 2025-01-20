@@ -72,7 +72,7 @@ if uploaded_file is not None:
     bytes_data = uploaded_file.getvalue()
 
     with st.spinner('Uploading to s3...'):
-        result = upload_file(uploaded_file,{AWS_BUCKET},uploaded_file.name)
+        result = upload_file(uploaded_file,f"{AWS_BUCKET}",uploaded_file.name)
         if result:
             print('File was uploaded successfully')
         else:

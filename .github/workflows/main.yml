@@ -27,7 +27,8 @@ env:
                                                # containerDefinitions section of your task definition
   CONTAINER_NAME_BACKEND: aiapp-backend            # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
-
+  API_HOSTNAME: "localhost"                     # set this to the hostname of your API
+  AWS_BUCKET: "llms.ismaelpapa.com"
 jobs:
   deploy:
     name: Deploy
@@ -90,6 +91,18 @@ jobs:
           task-definition: ${{ steps.task-def-frontend.outputs.task-definition }}
           container-name: ${{ env.CONTAINER_NAME_BACKEND}}
           image: ${{ steps.build-image-backend.outputs.image }}
+
+      - name: Add environment variables to ECS task definition
+        uses: cvmaker-bv/amazon-ecs-task-environment@v1
+        env:
+          API_HOSTNAME: ${{ env.API_HOSTNAME }}]
+          AWS_BUCKET: ${{ env.AWS_BUCKET }}
+          ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        with:
+          task-definition: ${{ steps.task-def-backend.outputs.task-definition }}
+          container-name: ${{ env.CONTAINER_NAME_FRONTEND }}
+          env-variables: "${{ toJson(env) }}"
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
