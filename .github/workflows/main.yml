@@ -27,8 +27,18 @@ env:
                                                # containerDefinitions section of your task definition
   CONTAINER_NAME_BACKEND: aiapp-backend            # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
+  CONTAINER_NAME_OTEL: opentelemetry            # set this to the name of the container in the
+                                               # containerDefinitions section of your task definition
   API_HOSTNAME: "localhost"                     # set this to the hostname of your API
   AWS_BUCKET: "llms.ismaelpapa.com"
+  OTEL_SERVICE_NAME: "aiapp-fargate"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
+  OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=aiapp-fargate,service.version=1.0"
+
+  METRICS_TO_EXCLUDE: "[]"
+  SPLUNK_CONFIG: "/etc/otel/collector/fargate_config.yaml"
+  ECS_METADATA_EXCLUDED_IMAGES: "[\"quay.io/signalfx/splunk-otel-collector:latest\"]"
+
 jobs:
   deploy:
     name: Deploy
@@ -93,8 +103,8 @@ jobs:
           image: ${{ steps.build-image-backend.outputs.image }}
           
           
-      - name: Add environment variables to ECS task definition
-        id: add-env-var
+      - name: Add environment variables to ECS task definition for FRONTEND CONTAINER
+        id: add-env-var-fe
         uses: cvmaker-bv/amazon-ecs-task-environment@v1
         env:
           API_HOSTNAME: ${{ env.API_HOSTNAME }}
@@ -116,10 +126,42 @@ jobs:
           container-name: ${{ env.CONTAINER_NAME_FRONTEND }}
           env-variables: "${{ toJson(env) }}"
 
+      - name: Add environment variables to ECS task definition for BACKEND CONTAINER
+        id: add-env-var-bk
+        uses: cvmaker-bv/amazon-ecs-task-environment@v1
+        env:
+          #OTEL variables
+          OTEL_SERVICE_NAME: ${{ env.OTEL_SERVICE_NAME }}
+          OTEL_RESOURCE_ATTRIBUTES: ${{ env.OTEL_RESOURCE_ATTRIBUTES }}
+          OTEL_EXPORTER_OTLP_ENDPOINT: ${{ env.OTEL_EXPORTER_OTLP_ENDPOINT }}
+
+        with:
+          task-definition: ${{ steps.add-env-var-fe.outputs.task-definition }}
+          container-name: ${{ env.CONTAINER_NAME_BACKEND }}
+          env-variables: "${{ toJson(env) }}"
+
+      - name: Add environment variables to ECS task definition for OTEL CONTAINER
+        id: add-env-var-otel
+        uses: cvmaker-bv/amazon-ecs-task-environment@v1
+        env:
+          #OTEL variables
+          METRICS_TO_EXCLUDE: ${{ env.METRICS_TO_EXCLUDE }}
+          SPLUNK_CONFIG: ${{ env.SPLUNK_CONFIG }}
+          SPLUNK_REALM: ${{ secrets.SPLUNK_REALM }}
+          SPLUNK_HEC_URL: ${{ secrets.SPLUNK_HEC_URL }}
+          SPLUNK_ACCESS_TOKEN: ${{ secrets.SPLUNK_ACCESS_TOKEN }}
+          SPLUNK_HEC_TOKEN: ${{ secrets.SPLUNK_HEC_TOKEN }}
+          ECS_METADATA_EXCLUDED_IMAGES: ${{ env.ECS_METADATA_EXCLUDED_IMAGES }}
+
+        with:
+          task-definition: ${{ steps.add-env-var-bk.outputs.task-definition }}
+          container-name: ${{ env.CONTAINER_NAME_OTEL }}
+          env-variables: "${{ toJson(env) }}"
+
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
         with:
-          task-definition: ${{ steps.add-env-var.outputs.task-definition }}
+          task-definition: ${{ steps.add-env-var-otel.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
