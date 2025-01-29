@@ -91,15 +91,26 @@ jobs:
           task-definition: ${{ steps.task-def-frontend.outputs.task-definition }}
           container-name: ${{ env.CONTAINER_NAME_BACKEND}}
           image: ${{ steps.build-image-backend.outputs.image }}
-
+          
+          
       - name: Add environment variables to ECS task definition
         id: add-env-var
         uses: cvmaker-bv/amazon-ecs-task-environment@v1
         env:
           API_HOSTNAME: ${{ env.API_HOSTNAME }}
+          #AWS variables
           AWS_BUCKET: ${{ env.AWS_BUCKET }}
           ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
           SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          #authlib variables
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          REDIRECT_URI: ${{ secrets.REDIRECT_URI }}
+          REFRESH_TOKEN_URL: ${{ secrets.REFRESH_TOKEN_URL }}
+          SCOPE: ${{ secrets.SCOPE }}
+          TOKEN_URL: ${{ secrets.TOKEN_URL }}
+          AUTHORIZE_URL: ${{ secrets.AUTHORIZE_URL }}
+
         with:
           task-definition: ${{ steps.task-def-backend.outputs.task-definition }}
           container-name: ${{ env.CONTAINER_NAME_FRONTEND }}
