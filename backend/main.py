@@ -3,7 +3,9 @@ from typing import Union
 import io
 from fastapi import FastAPI, UploadFile
 from PIL import Image
+from traceloop.sdk import Traceloop
 
+Traceloop.init()
 app = FastAPI()
 
 @app.get("/")

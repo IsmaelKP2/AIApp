@@ -8,19 +8,53 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
+  proxy:
+    image: nginx:1.19.10-alpine
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./proxy/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./proxy/certs:/etc/nginx/certs
+    depends_on:
+      - backend
   backend:
-    build:
-      context: ./backend
+    #build:
+    #  context: ./backend
     ports:
       - 8000:8000
+    image: backend-test
     container_name: aiapp-backend
+    environment:
+    - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME}
+    - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}
+    - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+    - TRACELOOP_BASE_URL=${TRACELOOP_BASE_URL}
+
+
   frontend:
     build: ./frontend
     ports:
-      - 80:80
+      - 8080:80
     volumes:
       - ./frontend:/app
     restart: always
     container_name: aiapp-frontend
     env_file:
       - ./frontend/.env
+  otelcollector:
+    image:  quay.io/signalfx/splunk-otel-collector:latest-amd64
+    container_name: otelcollector-container
+    command: ["--config=/etc/otel-collector-config.yml", "--set=service.telemetry.logs.level=debug"]
+    environment:
+      - SPLUNK_ACCESS_TOKEN=${SPLUNK_ACCESS_TOKEN}
+      - REALM=${SPLUNK_REALM}
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+    - 4317:4317
+    - 4318:4318
+    - 13133:13133
+    - 1888:1888
+    - 55679:55679
+    pull_policy: if_not_present

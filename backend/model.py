@@ -1,7 +1,9 @@
 from transformers import ViltProcessor, ViltForQuestionAnswering
 import requests
 from PIL import Image
+from traceloop.sdk import Traceloop
 
+Traceloop.init()
 
 
 processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa")

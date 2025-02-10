@@ -6,3 +6,5 @@ requests
 fastapi
 uvicorn[standard]
 authlib
+splunk-opentelemetry[all]
+traceloop-sdk
