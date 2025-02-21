@@ -9,10 +9,8 @@
 
 name: Deploy to Amazon ECS
 
-on:
-  push:
-    branches:
-      - main
+on: workflow_dispatch
+
 
 env:
   AWS_REGION: eu-west-2                        # set this to your preferred AWS region, e.g. us-west-1
