@@ -32,10 +32,15 @@ Parameters:
     Type: String
     Default: llms/frontend-streamlit:latest
 
-  ContainerPort:
+  ContainerPortFrontend:
     Description: What port number the application inside the docker container is binding to
     Type: Number
     Default: 80
+
+  ContainerPortBackend:
+    Description: What port number the application inside the docker container is binding to
+    Type: Number
+    Default: 8000
 
   ContainerCpu:
     Description: How much CPU to give the container. 1024 is 1 CPU
@@ -102,21 +107,21 @@ Resources:
           Memory: !Ref ContainerMemory
           Image: !Ref ImageUrl
           PortMappings:
-            - ContainerPort: !Ref ContainerPort
+            - ContainerPort: !Ref ContainerPortFrontend
         - Name: !Ref ContainerNameBackend
           Essential: true
           Cpu: !Ref ContainerCpu
           Memory: !Ref ContainerMemory
           Image: !Ref ImageUrl
           PortMappings:
-            - ContainerPort: !Ref ContainerPort
+            - ContainerPort: !Ref ContainerPortBackend
         - Name: !Ref ContainerNameOtel
           Essential: true
           Cpu: !Ref ContainerCpu
           Memory: !Ref ContainerMemory
           Image: !Ref ImageUrl
-          PortMappings:
-            - ContainerPort: !Ref ContainerPort
+          # PortMappings:
+            # - ContainerPort: !Ref ContainerPort
 
   # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well
