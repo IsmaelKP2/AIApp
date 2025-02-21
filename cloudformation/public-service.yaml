@@ -8,20 +8,20 @@ Parameters:
     Type: String
     Default: AIAPP
 
-  CONTAINER_NAME_FRONTEND:
+  ContainerNameFrontend:
     Description: The name of the frontend container
     Type: String
     Default: aiapp-frontend
 
-  CONTAINER_NAME_BACKEND:
+  ContainerNameBackend:
     Description: The name of the backend container
     Type: String
     Default: aiapp-backend
-  CONTAINER_NAME_OTEL:
+  ContainerNameOtel:
     Description: The name of the otel container
     Type: String
     Default: opentelemetry
-
+    
   ServiceName:
     Description: A name for the service
     Type: String
@@ -96,21 +96,21 @@ Resources:
         - !Ref Role
         - !Ref AWS::NoValue
       ContainerDefinitions:
-        - Name: !Ref CONTAINER_NAME_FRONTEND
+        - Name: !Ref ContainerNameFrontend
           Essential: true
           Cpu: !Ref ContainerCpu
           Memory: !Ref ContainerMemory
           Image: !Ref ImageUrl
           PortMappings:
             - ContainerPort: !Ref ContainerPort
-        - Name: !Ref CONTAINER_NAME_BACKEND
+        - Name: !Ref ContainerNameBackend
           Essential: true
           Cpu: !Ref ContainerCpu
           Memory: !Ref ContainerMemory
           Image: !Ref ImageUrl
           PortMappings:
             - ContainerPort: !Ref ContainerPort
-        - Name: !Ref CONTAINER_NAME_OTEL
+        - Name: !Ref ContainerNameOtel
           Essential: true
           Cpu: !Ref ContainerCpu
           Memory: !Ref ContainerMemory
