@@ -164,7 +164,7 @@ Resources:
       TaskDefinition: !Ref TaskDefinition
       LoadBalancers:
         - ContainerName: !Ref ServiceName
-          ContainerPort: !Ref ContainerPort
+          ContainerPort: !Ref ContainerPortFrontend
           TargetGroupArn: !Ref TargetGroup
 
   # A target group. This is used for keeping track of all the tasks, and
@@ -182,7 +182,7 @@ Resources:
       HealthyThresholdCount: 2
       TargetType: ip
       Name: !Ref ServiceName
-      Port: !Ref ContainerPort
+      Port: !Ref ContainerPortFrontend
       Protocol: HTTP
       UnhealthyThresholdCount: 2
       VpcId: !ImportValue
