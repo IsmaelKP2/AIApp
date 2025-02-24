@@ -42,6 +42,16 @@ Parameters:
     Type: Number
     Default: 8000
 
+  ContainerCpuTask:
+    Description: How much CPU to give the task. 1024 is 1 CPU
+    Type: Number
+    Default: 1024
+
+  ContainerMemoryTask:
+    Description: How much memory in megabytes to give the task
+    Type: Number
+    Default: 2048
+
   ContainerCpu:
     Description: How much CPU to give the container. 1024 is 1 CPU
     Type: Number
@@ -86,8 +96,8 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Ref ServiceName
-      Cpu: !Ref ContainerCpu
-      Memory: !Ref ContainerMemory
+      Cpu: !Ref ContainerCpuTask
+      Memory: !Ref ContainerMemoryTask
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
@@ -163,7 +173,7 @@ Resources:
                   - PublicSubnetTwo
       TaskDefinition: !Ref TaskDefinition
       LoadBalancers:
-        - ContainerName: !Ref ServiceName
+        - ContainerName: !Ref ContainerNameFrontend
           ContainerPort: !Ref ContainerPortFrontend
           TargetGroupArn: !Ref TargetGroup
 
