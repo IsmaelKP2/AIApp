@@ -14,8 +14,8 @@ on: workflow_dispatch
 
 env:
   AWS_REGION: eu-west-2                        # set this to your preferred AWS region, e.g. us-west-1
-  ECS_CLUSTER: AIAPP_2                         # set this to your Amazon ECS cluster name
-  ECS_SERVICE: AIAPP_2                         # set this to your Amazon ECS service name
+  ECS_CLUSTER: AIAPP                         # set this to your Amazon ECS cluster name
+  ECS_SERVICE: AIAPP-service                         # set this to your Amazon ECS service name
   ECS_TASK_DEFINITION: .aws/task-definition.json  # set this to the path to your Amazon ECS task definition
 
   ECR_REPOSITORY_FRONTEND: llms/frontend-streamlit      # set this to your Amazon ECR repository name
@@ -41,7 +41,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    environment: production
+    environment: personal
 
     steps:
       - name: Checkout
@@ -148,9 +148,9 @@ jobs:
           SPLUNK_REALM: ${{ secrets.SPLUNK_REALM }}
           SPLUNK_HEC_URL: ${{ secrets.SPLUNK_HEC_URL }}
           SPLUNK_ACCESS_TOKEN: ${{ secrets.SPLUNK_ACCESS_TOKEN }}
-          SPLUNK_HEC_TOKEN: ${{ secrets.SPLUNK_HEC_TOKEN }}
+          SPLUNK_HEC_TOKEN: ${{ secrets.SPLUNK_HEC_TOKEN }} 
           ECS_METADATA_EXCLUDED_IMAGES: ${{ env.ECS_METADATA_EXCLUDED_IMAGES }}
-
+            
         with:
           task-definition: ${{ steps.add-env-var-bk.outputs.task-definition }}
           container-name: ${{ env.CONTAINER_NAME_OTEL }}
