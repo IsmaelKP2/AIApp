@@ -27,10 +27,20 @@ Parameters:
     Type: String
     Default: AIAPP
 
-  ImageUrl:
+  ImageUrlFrontend:
     Description: The url of a docker image that contains the application process that will handle the traffic for this service
     Type: String
-    Default: llms/frontend-streamlit:latest
+    Default: 277707112540.dkr.ecr.eu-west-2.amazonaws.com/llms/aiapp-frontend:latest
+
+  ImageUrlBackend:
+    Description: The url of a docker image that contains the application process that will handle the traffic for this service
+    Type: String
+    Default: 277707112540.dkr.ecr.eu-west-2.amazonaws.com/llms/aiapp-backend:latest
+
+  ImageUrlOtel:
+    Description: The url of a docker image that contains the application process that will handle the traffic for this service
+    Type: String
+    Default: quay.io/signalfx/splunk-otel-collector:latest
 
   ContainerPortFrontend:
     Description: What port number the application inside the docker container is binding to
@@ -45,22 +55,27 @@ Parameters:
   ContainerCpuTask:
     Description: How much CPU to give the task. 1024 is 1 CPU
     Type: Number
-    Default: 1024
+    Default: 2048
 
   ContainerMemoryTask:
     Description: How much memory in megabytes to give the task
     Type: Number
-    Default: 2048
+    Default: 4096
 
   ContainerCpu:
     Description: How much CPU to give the container. 1024 is 1 CPU
     Type: Number
-    Default: 256
+    Default: 512
 
   ContainerMemory:
     Description: How much memory in megabytes to give the container
     Type: Number
     Default: 512
+  
+  ContainerMemoryBK:
+    Description: How much memory in megabytes to give the container
+    Type: Number
+    Default: 3072
 
   Path:
     Description: A path on the public load balancer that this service should be connected to. Use * to send all load balancer traffic to this service.
@@ -115,23 +130,44 @@ Resources:
           Essential: true
           Cpu: !Ref ContainerCpu
           Memory: !Ref ContainerMemory
-          Image: !Ref ImageUrl
+          Image: !Ref ImageUrlFrontend
           PortMappings:
             - ContainerPort: !Ref ContainerPortFrontend
+          LogConfiguration: 
+            LogDriver: "awslogs"
+            Options: 
+              awslogs-group: "/ecs/AIApp"
+              mode: "non-blocking"
+              awslogs-create-group: "true"
+              max-buffer-size: "25m"
+              awslogs-region: "eu-west-2"
+              awslogs-stream-prefix: "ecs"
         - Name: !Ref ContainerNameBackend
-          Essential: true
+          Essential: false
           Cpu: !Ref ContainerCpu
-          Memory: !Ref ContainerMemory
-          Image: !Ref ImageUrl
+          Memory: !Ref ContainerMemoryBK
+          Image: !Ref ImageUrlBackend
           PortMappings:
             - ContainerPort: !Ref ContainerPortBackend
+          LogConfiguration: 
+            LogDriver: "awslogs"
+            Options: 
+              awslogs-group: "/ecs/AIApp"
+              mode: "non-blocking"
+              awslogs-create-group: "true"
+              max-buffer-size: "25m"
+              awslogs-region: "eu-west-2"
+              awslogs-stream-prefix: "ecs"
         - Name: !Ref ContainerNameOtel
           Essential: true
           Cpu: !Ref ContainerCpu
           Memory: !Ref ContainerMemory
-          Image: !Ref ImageUrl
+          Image: !Ref ImageUrlOtel
           # PortMappings:
             # - ContainerPort: !Ref ContainerPort
+      RuntimePlatform:        
+        CpuArchitecture: "X86_64"
+        OperatingSystemFamily: "LINUX"
 
   # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well

@@ -8,22 +8,22 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  proxy:
-    image: nginx:1.19.10-alpine
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./proxy/conf/nginx.conf:/etc/nginx/nginx.conf
-      - ./proxy/certs:/etc/nginx/certs
-    depends_on:
-      - backend
+  # proxy:
+  #   image: nginx:1.19.10-alpine
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #   volumes:
+  #     - ./proxy/conf/nginx.conf:/etc/nginx/nginx.conf
+  #     - ./proxy/certs:/etc/nginx/certs
+  #   depends_on:
+  #     - backend
   backend:
-    #build:
-    #  context: ./backend
+    build:
+      context: ./backend
     ports:
       - 8000:8000
-    image: backend-test
+    #image: backend-test
     container_name: aiapp-backend
     environment:
     - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME}

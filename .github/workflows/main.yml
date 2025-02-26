@@ -18,7 +18,7 @@ env:
   ECS_SERVICE: AIAPP-service                         # set this to your Amazon ECS service name
   ECS_TASK_DEFINITION: .aws/task-definition.json  # set this to the path to your Amazon ECS task definition
 
-  ECR_REPOSITORY_FRONTEND: llms/frontend-streamlit      # set this to your Amazon ECR repository name
+  ECR_REPOSITORY_FRONTEND: llms/aiapp-frontend      # set this to your Amazon ECR repository name
   ECR_REPOSITORY_BACKEND: llms/aiapp-backend      # set this to your Amazon ECR repository name
                                                # file, e.g. .aws/task-definition.json
   CONTAINER_NAME_FRONTEND: aiapp-frontend               # set this to the name of the container in the
