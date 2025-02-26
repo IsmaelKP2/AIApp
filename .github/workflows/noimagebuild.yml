@@ -72,7 +72,7 @@ jobs:
         with:
           task-definition: ${{ steps.task-def-frontend.outputs.task-definition }}
           container-name: ${{ env.CONTAINER_NAME_BACKEND}}
-          image: 277707112540.dkr.ecr.eu-west-2.amazonaws.com/llms/aiapp-frontend:latest
+          image: 277707112540.dkr.ecr.eu-west-2.amazonaws.com/llms/aiapp-backend:latest
           
           
       - name: Add environment variables to ECS task definition for FRONTEND CONTAINER
