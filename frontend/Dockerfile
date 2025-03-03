@@ -7,5 +7,5 @@ WORKDIR /app
 RUN pip install -r requirements.txt
 COPY . /app
 
-EXPOSE 80
-CMD ["streamlit","run","streamlit_app.py","--server.port","80","browser.port","80"]
+EXPOSE 8501
+CMD ["streamlit","run","streamlit_app.py"]
